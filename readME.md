@@ -17,30 +17,47 @@ Esta API é um ecossistema completo para simular uma rede social. Ela integra **
 
 ---
 
-## 🛣️ Guia de Endpoints
+## 🔐 Autenticação e Segurança
 
-### Usuários
+Esta API utiliza **JWT (JSON Web Token)** para proteger rotas sensíveis.
 
-| Método     | Rota               | Parâmetros / Body             | Descrição                                     |
-| :--------- | :----------------- | :---------------------------- | :-------------------------------------------- |
-| **GET**    | `/users`           | `?page=1&limit=10&search=...` | Lista usuários com paginação e busca.         |
-| **GET**    | `/users/:username` | `:username` (na URL)          | Retorna o perfil e os 10 posts mais recentes. |
-| **POST**   | `/user`            | `{ email, name, age }`        | Cria um usuário de forma simplificada.        |
-| **PUT**    | `/user/:id`        | `{ email, name, age }`        | Atualiza os dados de um usuário pelo ID.      |
-| **DELETE** | `/user/:id`        | `:id` (na URL)                | Remove permanentemente um usuário.            |
+### Como acessar rotas protegidas:
 
-### Posts
+1. **Registro**: Crie sua conta em `POST /register`.
+2. **Login**: Autentique-se em `POST /login` para receber seu token de acesso.
+3. **Autorização**: Em todas as rotas privadas, envie o token no cabeçalho (Header) da seguinte forma:
+   - **Key**: `Authorization`
+   - **Value**: `Bearer <seu_token_aqui>`
 
-| Método   | Rota     | Parâmetros / Body                 | Descrição                               |
-| :------- | :------- | :-------------------------------- | :-------------------------------------- |
-| **GET**  | `/posts` | `?page=1&limit=20`                | Retorna o feed global de postagens.     |
-| **POST** | `/posts` | `{ content, imageUrl, authorId }` | Cria um novo post vinculado a um autor. |
+---
 
-### Social
+## 🛣️ Endpoints Atualizados
 
-| Método   | Rota      | Parâmetros / Body             | Descrição                                   |
-| :------- | :-------- | :---------------------------- | :------------------------------------------ |
-| **POST** | `/follow` | `{ followerId, followingId }` | Cria um vínculo de seguidor entre dois IDs. |
+### 🌍 Públicos (Sem Token)
+
+| Método   | Rota        | Descrição                                         |
+| :------- | :---------- | :------------------------------------------------ |
+| **POST** | `/register` | Cadastra um novo usuário com senha criptografada. |
+| **POST** | `/login`    | Valida credenciais e retorna o Token JWT.         |
+| **GET**  | `/posts`    | Feed global público (visualização limitada).      |
+
+### 🔒 Privados (Requer Token JWT)
+
+| Método     | Rota            | Descrição                                                 |
+| :--------- | :-------------- | :-------------------------------------------------------- |
+| **GET**    | `/feed/:userId` | Retorna o feed personalizado (apenas de quem você segue). |
+| **GET**    | `/users`        | Lista usuários (com paginação e busca).                   |
+| **POST**   | `/follow`       | Segue um usuário (vínculo social).                        |
+| **PUT**    | `/user/:id`     | Atualiza o próprio perfil.                                |
+| **DELETE** | `/user/:id`     | Remove a conta e dados vinculados.                        |
+
+---
+
+## 🛠️ Tecnologias de Segurança
+
+- **Bcrypt**: Hashing de senhas com salt (10 rounds).
+- **JWT**: Autenticação stateless com expiração de 7 dias.
+- **Middleware**: Filtro de segurança centralizado para rotas privadas.
 
 ---
 
