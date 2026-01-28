@@ -1,17 +1,16 @@
 import express from "express";
 import { register } from "../controllers/authController.js";
-import { prisma } from "../lib/prisma.js"; // Ajuste o caminho se necessário
+import { validate, userSchema } from "../middlewares/validateMiddleware.js";
+import { prisma } from "../lib/prisma.js";
 
 const router = express.Router();
 
-// Rota de Cadastro Seguro
-router.post("/register", register);
+router.post("/register", validate(userSchema), register);
 
-// Feed Global (público)
 router.get("/posts", async (req, res) => {
   const posts = await prisma.post.findMany({
     include: { author: { select: { username: true, displayName: true } } },
-    orderBy: { createdAt: "desc" }
+    orderBy: { createdAt: "desc" },
   });
   res.json(posts);
 });

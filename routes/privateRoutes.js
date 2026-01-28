@@ -6,15 +6,15 @@ import {
   updateUser,
   deleteUser,
 } from "../controllers/userController.js";
+import { validate, postSchema } from "../middlewares/validateMiddleware.js";
+import { createPost } from "../controllers/postController.js";
 
 const router = express.Router();
 
-// Feed Personalizado (Baseado em quem o usuário segue)
 router.get("/feed/:userId", getFollowersFeed);
 router.get("/users", listUsers);
 router.get("/users/:username", getUserProfile);
 
-// Rota para seguir alguém
 router.post("/follow", async (req, res) => {
   const { followerId, followingId } = req.body;
   try {
@@ -26,6 +26,7 @@ router.post("/follow", async (req, res) => {
     res.status(400).json({ error: "Erro ao seguir usuário." });
   }
 });
+router.post("/posts", validate(postSchema), createPost);
 
 router.put("/user/:id", updateUser);
 router.delete("/user/:id", deleteUser);

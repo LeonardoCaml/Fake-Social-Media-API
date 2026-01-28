@@ -1,6 +1,5 @@
 import { prisma } from "../lib/prisma.js";
 
-// Lista usuários com paginação e busca (Otimizado)
 export const listUsers = async (req, res) => {
   const { page = 1, limit = 10, search = "" } = req.query;
   const skip = (page - 1) * limit;
@@ -30,7 +29,6 @@ export const listUsers = async (req, res) => {
   }
 };
 
-// Retorna o perfil completo de um usuário pelo username
 export const getUserProfile = async (req, res) => {
   const { username } = req.params;
 
@@ -39,18 +37,17 @@ export const getUserProfile = async (req, res) => {
       where: { username },
       include: {
         _count: {
-          select: { posts: true, following: true, followedBy: true }
+          select: { posts: true, following: true, followedBy: true },
         },
         posts: {
           take: 10,
-          orderBy: { createdAt: "desc" }
-        }
-      }
+          orderBy: { createdAt: "desc" },
+        },
+      },
     });
 
     if (!user) return res.status(404).json({ error: "Usuário não encontrado" });
 
-    // Remove a senha antes de enviar para o cliente
     const { password, ...userWithoutPassword } = user;
     res.json(userWithoutPassword);
   } catch (error) {
@@ -58,18 +55,16 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
-// Atualiza dados do usuário
 export const updateUser = async (req, res) => {
   const { id } = req.params;
   const data = req.body;
 
   try {
-    // Impedimos a troca de senha por aqui (deve ter uma rota própria por segurança)
     delete data.password;
 
     const updated = await prisma.user.update({
       where: { id },
-      data
+      data,
     });
 
     res.json(updated);
@@ -78,15 +73,16 @@ export const updateUser = async (req, res) => {
   }
 };
 
-// Deleta usuário e limpa relações (Cascade manual para segurança)
 export const deleteUser = async (req, res) => {
   const { id } = req.params;
 
   try {
     await prisma.$transaction([
       prisma.post.deleteMany({ where: { authorId: id } }),
-      prisma.follows.deleteMany({ where: { OR: [{ followerId: id }, { followingId: id }] } }),
-      prisma.user.delete({ where: { id } })
+      prisma.follows.deleteMany({
+        where: { OR: [{ followerId: id }, { followingId: id }] },
+      }),
+      prisma.user.delete({ where: { id } }),
     ]);
 
     res.status(204).send();
