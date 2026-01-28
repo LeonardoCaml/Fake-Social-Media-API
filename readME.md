@@ -105,11 +105,11 @@ Envie os dados do novo usuário. A senha será criptografada automaticamente ant
 
 ```json
 {
-  "name": "Leonardo Camargo",
+  "name": "Leonardo Camelo",
   "username": "leonardo_dev",
   "email": "leo@email.com",
   "password": "minha_senha_super_segura",
-  "displayName": "Leo Camargo"
+  "displayName": "Leo Camelo"
 }
 ```
 
@@ -194,4 +194,4 @@ PORT=3000
 
 ---
 
-Desenvolvido por [Leonardo Camargo](https://github.com/LeonardoCaml)
+Desenvolvido por [Leonardo Camelo](https://github.com/LeonardoCaml)
