@@ -8,7 +8,7 @@ export const getFollowersFeed = async (req, res) => {
     });
 
     const followingIds = following.map(f => f.followingId);
-    followingIds.push(userId); // Ver os próprios posts também
+    followingIds.push(userId);
 
     const feed = await prisma.post.findMany({
       where: { authorId: { in: followingIds } },

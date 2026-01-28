@@ -1,6 +1,6 @@
 import express from "express";
 import { register } from "../controllers/authController.js";
-import { prisma } from "../../lib/prisma.js"; // Ajuste o caminho se necessário
+import { prisma } from "../lib/prisma.js"; // Ajuste o caminho se necessário
 
 const router = express.Router();
 

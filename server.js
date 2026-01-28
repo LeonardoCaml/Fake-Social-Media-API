@@ -1,9 +1,9 @@
 import express from "express";
 import cors from "cors"; // Recomendado para APIs públicas
 import morgan from "morgan";
-import { authMiddleware } from "./src/middlewares/authMiddleware.js";
-import publicRoutes from "./src/routes/publicRoutes.js";
-import privateRoutes from "./src/routes/privateRoutes.js";
+import { authMiddleware } from "./middlewares/authMiddleware.js";
+import publicRoutes from "./routes/publicRoutes.js";
+import privateRoutes from "./routes/privateRoutes.js";
 
 const app = express();
 

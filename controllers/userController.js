@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma.js";
+import { prisma } from "../lib/prisma.js";
 
 // Lista usuários com paginação e busca (Otimizado)
 export const listUsers = async (req, res) => {
