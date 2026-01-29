@@ -42,7 +42,7 @@ O projeto está organizado em camadas para facilitar a manutenção:
 
 ---
 
-## 🚀 Instalação e Configuração
+## 🚀 Instalação e Configuração (For Devs)
 
 1.  **Clone o repositório:**
 
@@ -82,6 +82,8 @@ O projeto está organizado em camadas para facilitar a manutenção:
 ## 🔐 Autenticação e Segurança
 
 Esta API utiliza **JWT (JSON Web Token)** para proteger rotas sensíveis.
+
+# API Fetch: https://fake-social-media-api.onrender.com
 
 ### Como acessar rotas protegidas:
 
