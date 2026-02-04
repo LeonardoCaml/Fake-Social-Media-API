@@ -26,6 +26,7 @@ router.post("/follow", async (req, res) => {
     res.status(400).json({ error: "Erro ao seguir usuário." });
   }
 });
+
 router.post("/posts", validate(postSchema), createPost);
 
 router.put("/user/:id", updateUser);
