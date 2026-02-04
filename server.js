@@ -23,6 +23,11 @@ const swaggerOptions = {
     servers: [
       {
         url: "https://fake-social-media-api.onrender.com",
+        description: "Servidor de Produção",
+      },
+      {
+        url: "http://localhost:3000",
+        description: "Servidor Local",
       },
     ],
     components: {
@@ -35,7 +40,7 @@ const swaggerOptions = {
       },
     },
   },
-  apis: ["./server.js"],
+  apis: ["./src/routes/*.js", "./server.js"],
 };
 
 const swaggerDocs = swaggerJsdoc(swaggerOptions);
