@@ -147,10 +147,12 @@ Após se cadastrar, valide suas credenciais para gerar seu token de acesso.
 
 Para acessar rotas como /feed ou /users, você deve incluir o token no cabeçalho de todas as requisições HTTP:
 
-```
-Header: Authorization
-
-Valor: Bearer <COLE_O_TOKEN_AQUI>
+```json
+{
+  Header: {
+    Authorization: Bearer <TOKEN_AQUI>
+  }
+}
 ```
 
 ## Nota: Se você não enviar o token ou ele estiver expirado, a API retornará um erro 401 Unauthorized.
@@ -167,13 +169,15 @@ Valor: Bearer <COLE_O_TOKEN_AQUI>
 
 ### 🔒 Privados (Requer Token JWT)
 
-| Método     | Rota            | Descrição                                                 |
-| :--------- | :-------------- | :-------------------------------------------------------- |
-| **GET**    | `/feed/:userId` | Retorna o feed personalizado (apenas de quem você segue). |
-| **GET**    | `/users`        | Lista usuários (com paginação e busca).                   |
-| **POST**   | `/follow`       | Segue um usuário (vínculo social).                        |
-| **PUT**    | `/user/:id`     | Atualiza o próprio perfil.                                |
-| **DELETE** | `/user/:id`     | Remove a conta e dados vinculados.                        |
+| Método     | Rota               | Descrição                                                 |
+| :--------- | :----------------- | :-------------------------------------------------------- |
+| **GET**    | `/feed/:userId`    | Retorna o feed personalizado (apenas de quem você segue). |
+| **GET**    | `/users`           | Lista usuários (com paginação e busca).                   |
+| **GET**    | `/users/:username` | Lista usuários específico (Por username).                 |
+| **POST**   | `/follow`          | Segue um usuário (vínculo social).                        |
+| **POST**   | `/posts`           | Cria um post.                                             |
+| **PUT**    | `/user/:id`        | Atualiza o próprio perfil.                                |
+| **DELETE** | `/user/:id`        | Remove a conta e dados vinculados.                        |
 
 ---
 
