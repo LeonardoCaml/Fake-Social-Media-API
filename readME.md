@@ -148,11 +148,9 @@ Após se cadastrar, valide suas credenciais para gerar seu token de acesso.
 Para acessar rotas como /feed ou /users, você deve incluir o token no cabeçalho de todas as requisições HTTP:
 
 ```json
-{
   Header: {
     Authorization: Bearer <TOKEN_AQUI>
   }
-}
 ```
 
 ## Nota: Se você não enviar o token ou ele estiver expirado, a API retornará um erro 401 Unauthorized.
