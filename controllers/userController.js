@@ -1,30 +1,35 @@
 import { prisma } from "../lib/prisma.js";
 
 export const listUsers = async (req, res) => {
-  const { page = 1, limit = 10, search = "" } = req.query;
-  const skip = (page - 1) * limit;
-
   try {
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 10;
+    const search = req.query.search || "";
+    const skip = (page - 1) * limit;
+
+    const where = search
+      ? {
+          OR: [
+            { name: { contains: search, mode: "insensitive" } },
+            { username: { contains: search, mode: "insensitive" } },
+          ],
+        }
+      : {};
+
     const users = await prisma.user.findMany({
-      where: {
-        OR: [
-          { name: { contains: search, mode: "insensitive" } },
-          { username: { contains: search, mode: "insensitive" } },
-        ],
-      },
+      where,
       select: {
         id: true,
         username: true,
         displayName: true,
-        avatarUrl: true,
-        createdAt: true,
       },
-      skip: Number(skip),
-      take: Number(limit),
+      skip: skip,
+      take: limit,
     });
 
     res.status(200).json(users);
   } catch (error) {
+    console.error("ERRO NO PRISMA:", error);
     res.status(500).json({ error: "Erro ao buscar usuários" });
   }
 };

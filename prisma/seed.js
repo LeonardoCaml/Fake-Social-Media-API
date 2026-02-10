@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 
 async function main() {
   console.log("🧹 Limpando banco de dados...");
-  // Deletando as coleções para começar do zero
+
   await prisma.user.deleteMany();
 
   console.log("👥 Gerando 100 usuários...");
@@ -21,7 +21,7 @@ async function main() {
         .toLowerCase()
         .substring(0, 30),
       email: faker.internet.email({ firstName, lastName }),
-      password: "password123",
+      password: faker.internet.password(),
       displayName: `${firstName} ${lastName}`,
       bio: faker.lorem.sentence().substring(0, 160),
       avatarUrl: faker.image.avatar(),
@@ -29,10 +29,8 @@ async function main() {
     });
   }
 
-  // Inserção em massa de usuários
   await prisma.user.createMany({ data: usersData });
 
-  // Pegamos os IDs gerados pelo MongoDB para as próximas etapas
   const allUsers = await prisma.user.findMany({ select: { id: true } });
   const allUserIds = allUsers.map((u) => u.id);
 
@@ -45,8 +43,7 @@ async function main() {
       postsData.push({
         content: faker.lorem.paragraph().substring(0, 280),
         imageUrl:
-          faker.helpers.maybe(() => faker.image.url(), { probability: 0.3 }) ||
-          null,
+          faker.helpers.maybe(() => faker.image.url(), { probability: 0.3 }) || null,
         authorId: userId,
         createdAt: faker.date.recent(),
       });
@@ -57,11 +54,9 @@ async function main() {
   console.log("🤝 Criando conexões de seguidores...");
   const followsData = [];
   for (const userId of allUserIds) {
-    // Escolhe de 3 a 10 pessoas aleatórias para este usuário seguir
     const amountToFollow = faker.number.int({ min: 3, max: 10 });
     const potentialIdols = allUserIds.filter((id) => id !== userId);
 
-    // faker.helpers.arrayElements pega itens aleatórios sem repetir
     const toFollow = faker.helpers.arrayElements(
       potentialIdols,
       amountToFollow,

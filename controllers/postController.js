@@ -26,7 +26,6 @@ export const getFollowersFeed = async (req, res) => {
   }
 };
 
-// Criar um novo Post
 export const createPost = async (req, res) => {
   const { content } = req.body;
   const authorId = req.userId;
@@ -47,7 +46,6 @@ export const createPost = async (req, res) => {
   }
 };
 
-// Buscar todos os posts (Feed Global)
 export const getAllPosts = async (req, res) => {
   try {
     const posts = await prisma.post.findMany({
