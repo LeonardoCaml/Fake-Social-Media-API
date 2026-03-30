@@ -99,16 +99,6 @@ API completa para simular uma rede social. Construída com **Node.js**, **Expres
 
 ---
 
-## 📖 Documentação Interativa
-
-Após iniciar o servidor, acesse a documentação Swagger em:
-
-```
-http://localhost:3000/api-docs
-```
-
----
-
 ## 🛣️ Endpoints
 
 # API Fetch: https://fake-social-media-api.onrender.com
