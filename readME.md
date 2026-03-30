@@ -1,6 +1,8 @@
 # 🌐 Fake Social Network API
 
-Esta API é um ecossistema completo para simular uma rede social. Ela integra **Node.js**, **Express** e **Prisma** com um banco de dados **MongoDB**, oferecendo um sistema robusto de usuários, postagens e conexões sociais, além de um gerador de dados (Seed) para testes imediatos.
+API completa para simular uma rede social. Construída com **Node.js**, **Express** e **Prisma** sobre um banco **MongoDB**, oferecendo um sistema de usuários, postagens e conexões sociais, além de um gerador de dados (Seed) para testes imediatos.
+
+> **Nota:** Esta API é voltada para testes e uso local — todas as rotas são abertas, sem necessidade de autenticação.
 
 ---
 
@@ -9,192 +11,191 @@ Esta API é um ecossistema completo para simular uma rede social. Ela integra **
 - **Node.js & Express**: Framework base para a construção da API.
 - **MongoDB Atlas**: Banco de dados NoSQL em nuvem.
 - **Prisma ORM**: Modelagem de dados e consultas otimizadas.
-- **JWT (JSON Web Token)**: Autenticação segura entre cliente e servidor.
-- **Bcrypt**: Criptografia (hashing) de senhas para proteção de dados.
+- **Zod**: Validação de schemas de entrada.
 - **Morgan**: Log de requisições para monitoramento em tempo real.
+- **Swagger**: Documentação interativa da API.
 
 ---
 
-## 📂 Estrutura do Projeto (MVC)
+## 📂 Estrutura do Projeto
 
-O projeto está organizado em camadas para facilitar a manutenção:
-
-- `src/routes/`: Definição de rotas públicas e protegidas.
-- `src/controllers/`: Lógica de negócio e comunicação com o banco.
-- `src/middlewares/`: Filtros de segurança e validação de tokens.
-- `lib/`: Configurações globais (instância do Prisma).
-- `server.js`: Ponto de entrada da aplicação.
+```
+├── server.js              # Ponto de entrada da aplicação
+├── routes/
+│   └── routes.js          # Definição de todas as rotas
+├── controllers/
+│   ├── userController.js  # Lógica de usuários (CRUD)
+│   └── postController.js  # Lógica de posts e feed
+├── middlewares/
+│   └── validateMiddleware.js  # Validação de dados com Zod
+├── lib/
+│   └── prisma.js          # Instância global do Prisma Client
+└── prisma/
+    ├── schema.prisma      # Modelagem do banco de dados
+    └── seed.js            # Gerador de dados fictícios
+```
 
 ---
 
-## 🛠️ Funcionalidades Detalhadas
+## 🛠️ Funcionalidades
 
 ### 👥 Gestão de Usuários
 
-- **Listagem Inteligente**: Suporta paginação para evitar sobrecarga e filtro de busca por nome ou username.
+- **Listagem Inteligente**: Suporta paginação (`?page=1&limit=10`) e filtro de busca por nome ou username (`?search=leo`).
 - **Perfil Completo**: Consulta de perfil que inclui bio, avatar, contagem de seguidores e os posts mais recentes do usuário.
 - **CRUD Completo**: Criação, leitura, atualização e deleção de usuários.
 
 ### 📝 Conteúdo e Engajamento
 
-- **Global Feed**: Uma linha do tempo com as postagens de todos os usuários da rede, ordenadas pelas mais recentes.
-- **Sistema de Seguidores**: Lógica de relacionamento N:N (muitos para muitos) que permite que usuários sigam uns aos outros sem duplicidade.
+- **Feed Global** (`GET /posts`): Linha do tempo com as postagens de todos os usuários, ordenadas pelas mais recentes.
+- **Feed Personalizado** (`GET /feed/:userId`): Posts apenas de quem o usuário segue.
+- **Criação de Posts**: Até 280 caracteres por publicação.
+
+### 🤝 Sistema de Seguidores
+
+- Relacionamento N:N (muitos para muitos) que permite que usuários sigam uns aos outros sem duplicidade.
 
 ---
 
-## 🚀 Instalação e Configuração (For Devs)
+## 🚀 Instalação e Configuração
 
-1.  **Clone o repositório:**
+1. **Clone o repositório:**
 
     ```bash
-    git clone [https://github.com/LeonardoCaml/Fake-Social-Media-API.git](https://github.com/LeonardoCaml/Fake-Social-Media-API.git)
+    git clone https://github.com/LeonardoCaml/Fake-Social-Media-API.git
     cd Fake-Social-Media-API
     ```
 
-2.  **Instale as dependências:**
+2. **Instale as dependências:**
 
     ```bash
     npm install
     ```
 
-3.  **Configure as Variáveis de Ambiente:**
-    Crie um arquivo `.env` na raiz do projeto e adicione:
+3. **Configure as Variáveis de Ambiente:**
+    Crie um arquivo `.env` na raiz do projeto:
 
     ```env
     DATABASE_URL="sua_url_do_mongodb_atlas"
-    JWT_SECRET="uma_chave_secreta_longa_e_aleatoria"
     PORT=3000
     ```
 
-4.  **Sincronize o Banco de Dados:**
+4. **Sincronize o Banco de Dados:**
 
     ```bash
     npx prisma db push
     ```
 
-5.  **Inicie o Servidor:**
+5. **Popule o banco com dados fictícios (opcional):**
+
+    ```bash
+    npx prisma db seed
+    ```
+
+6. **Inicie o Servidor:**
     ```bash
     npm run dev
     ```
 
 ---
 
-## 🔐 Autenticação e Segurança
+## 📖 Documentação Interativa
 
-Esta API utiliza **JWT (JSON Web Token)** para proteger rotas sensíveis.
+Após iniciar o servidor, acesse a documentação Swagger em:
 
-# API Fetch: https://fake-social-media-api.onrender.com
-
-### Como acessar rotas protegidas:
-
-1. **Registro**: Crie sua conta em `POST /register`.
-2. **Login**: Autentique-se em `POST /login` para receber seu token de acesso.
-3. **Autorização**: Em todas as rotas privadas, envie o token no cabeçalho (Header) da seguinte forma:
-   - **Key**: `Authorization`
-   - **Value**: `Bearer <seu_token_aqui>`
+```
+http://localhost:3000/api-docs
+```
 
 ---
 
-## 🔐 Guia de Autenticação (Passo a Passo)
+## 🛣️ Endpoints
 
-A API utiliza segurança de ponta. Para interagir com os dados, siga estas etapas:
+# API Fetch: https://fake-social-media-api.onrender.com
 
-### 1. Criar uma Conta (`POST /register`)
+| Método     | Rota               | Descrição                                                 |
+| :--------- | :----------------- | :-------------------------------------------------------- |
+| **GET**    | `/users`           | Lista usuários (com paginação e busca).                   |
+| **GET**    | `/users/:username` | Retorna o perfil completo de um usuário.                  |
+| **POST**   | `/users`           | Cadastra um novo usuário.                                 |
+| **PUT**    | `/users/:id`       | Atualiza o perfil de um usuário.                          |
+| **DELETE** | `/users/:id`       | Remove a conta e todos os dados vinculados.               |
+| **GET**    | `/posts`           | Feed global (todos os posts, ordenados por data).         |
+| **POST**   | `/posts`           | Cria um novo post.                                        |
+| **GET**    | `/feed/:userId`    | Feed personalizado (apenas de quem o usuário segue).      |
+| **POST**   | `/follow`          | Segue um usuário (cria vínculo social).                   |
 
-Envie os dados do novo usuário. A senha será criptografada automaticamente antes de chegar ao banco de dados.
+---
 
-**Request Body:**
+## 📋 Exemplos de Uso
+
+### Criar um Usuário (`POST /users`)
 
 ```json
 {
-  "name": "Leonardo Camelo",
   "username": "leonardo_dev",
   "email": "leo@email.com",
-  "password": "minha_senha_super_segura",
   "displayName": "Leo Camelo"
 }
 ```
 
----
-
-### Realizar Login (POST /login)
-
-Após se cadastrar, valide suas credenciais para gerar seu token de acesso.
-
-**Request Body:**
+**Resposta (201):**
 
 ```json
 {
-  "email": "leo@email.com",
-  "password": "minha_senha_super_segura"
-}
-```
-
-**Resposta do Servidor (Sucesso):**
-
-```json
-{
-  "message": "Login realizado!",
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+  "message": "Usuário criado com sucesso!",
   "user": {
     "id": "65b2f...",
-    "username": "leonardo_dev"
+    "username": "leonardo_dev",
+    "email": "leo@email.com",
+    "displayName": "Leo Camelo",
+    "createdAt": "2026-03-30T..."
   }
 }
 ```
 
-### 3. Como usar o Token (Bearer Token)
-
-Para acessar rotas como /feed ou /users, você deve incluir o token no cabeçalho de todas as requisições HTTP:
+### Criar um Post (`POST /posts`)
 
 ```json
-  Header: {
-    Authorization: Bearer <TOKEN_AQUI>
-  }
+{
+  "content": "Meu primeiro post na rede!",
+  "authorId": "65b2f..."
+}
 ```
 
-## Nota: Se você não enviar o token ou ele estiver expirado, a API retornará um erro 401 Unauthorized.
+### Seguir um Usuário (`POST /follow`)
 
-## 🛣️ Endpoints Atualizados
+```json
+{
+  "followerId": "65b2f...",
+  "followingId": "65b3a..."
+}
+```
 
-### 🌍 Públicos (Sem Token)
+### Listar Usuários com Busca (`GET /users?search=leo&page=1&limit=5`)
 
-| Método   | Rota        | Descrição                                         |
-| :------- | :---------- | :------------------------------------------------ |
-| **POST** | `/register` | Cadastra um novo usuário com senha criptografada. |
-| **POST** | `/login`    | Valida credenciais e retorna o Token JWT.         |
-| **GET**  | `/posts`    | Feed global público (visualização limitada).      |
-
-### 🔒 Privados (Requer Token JWT)
-
-| Método     | Rota               | Descrição                                                 |
-| :--------- | :----------------- | :-------------------------------------------------------- |
-| **GET**    | `/feed/:userId`    | Retorna o feed personalizado (apenas de quem você segue). |
-| **GET**    | `/users`           | Lista usuários (com paginação e busca).                   |
-| **GET**    | `/users/:username` | Lista usuários específico (Por username).                 |
-| **POST**   | `/follow`          | Segue um usuário (vínculo social).                        |
-| **POST**   | `/posts`           | Cria um post.                                             |
-| **PUT**    | `/user/:id`        | Atualiza o próprio perfil.                                |
-| **DELETE** | `/user/:id`        | Remove a conta e dados vinculados.                        |
+Retorna usuários cujo `username` ou `displayName` contenha "leo".
 
 ---
 
-## 🛠️ Tecnologias de Segurança
+## ⚙️ Variáveis de Ambiente (.env)
 
-- **Bcrypt**: Hashing de senhas com salt (10 rounds).
-- **JWT**: Autenticação stateless com expiração de 7 dias.
-- **Middleware**: Filtro de segurança centralizado para rotas privadas.
+| Variável       | Descrição                          |
+| :------------- | :--------------------------------- |
+| `DATABASE_URL` | URL de conexão com o MongoDB Atlas |
+| `PORT`         | Porta do servidor (padrão: 3000)   |
 
 ---
 
-## ⚙️ Configuração Técnica
+## 🌱 Seed (Dados Fictícios)
 
-### Variáveis de Ambiente (.env)
+O comando `npx prisma db seed` gera automaticamente:
 
-```env
-DATABASE_URL="mongodb+srv://user:pass@cluster.mongodb.net/dbname"
-PORT=3000
-```
+- **100 Usuários** com nomes, avatares e bios realistas
+- **~300 Posts** distribuídos entre os usuários
+- **~600 Conexões** de seguidores aleatórias
+
+Ideal para testar paginação, feeds e buscas com volume de dados.
 
 ---
 
