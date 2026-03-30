@@ -1,3 +1,5 @@
+import { prisma } from "../lib/prisma.js";
+
 export const getFollowersFeed = async (req, res) => {
   const { userId } = req.params;
 
@@ -27,8 +29,7 @@ export const getFollowersFeed = async (req, res) => {
 };
 
 export const createPost = async (req, res) => {
-  const { content } = req.body;
-  const authorId = req.userId;
+  const { content, authorId } = req.body;
 
   try {
     const post = await prisma.post.create({
@@ -43,21 +44,5 @@ export const createPost = async (req, res) => {
     res.status(201).json(post);
   } catch (error) {
     res.status(500).json({ error: "Erro ao criar post." });
-  }
-};
-
-export const getAllPosts = async (req, res) => {
-  try {
-    const posts = await prisma.post.findMany({
-      include: {
-        author: {
-          select: { username: true, displayName: true },
-        },
-      },
-      orderBy: { createdAt: "desc" },
-    });
-    res.json(posts);
-  } catch (error) {
-    res.status(500).json({ error: "Erro ao buscar posts." });
   }
 };

@@ -18,7 +18,6 @@ export const validate = (schema) => (req, res, next) => {
 export const userSchema = z.object({
   username: z.string().min(3, "Mínimo 3 caracteres").max(20),
   email: z.string().email("E-mail inválido"),
-  password: z.string().min(6, "A senha deve ter pelo menos 6 dígitos"),
   displayName: z.string().min(2).optional(),
 });
 

@@ -1,15 +1,5 @@
 import { prisma } from "../lib/prisma.js";
 
-// export const listUsers = async (req, res) => {
-//   try {
-//     const users = await prisma.user.findMany();
-//     res.status(200).json(users);
-//   } catch (error) {
-//     console.error("ERRO DETALHADO:", error);
-//     res.status(500).json({ error: error.message });
-//   }
-// };
-
 export const listUsers = async (req, res) => {
   try {
     const page = Number(req.query.page) || 1;
@@ -67,6 +57,32 @@ export const getUserProfile = async (req, res) => {
     res.json(userWithoutPassword);
   } catch (error) {
     res.status(500).json({ error: "Erro ao buscar perfil" });
+  }
+};
+
+export const createUser = async (req, res) => {
+  try {
+    const { email, username, displayName } = req.body;
+
+    const user = await prisma.user.create({
+      data: {
+        email,
+        username,
+        displayName,
+        password: "no-auth",
+      },
+      select: {
+        id: true,
+        username: true,
+        email: true,
+        displayName: true,
+        createdAt: true,
+      },
+    });
+
+    res.status(201).json({ message: "Usuário criado com sucesso!", user });
+  } catch (error) {
+    res.status(400).json({ error: "E-mail ou username já em uso." });
   }
 };
 
