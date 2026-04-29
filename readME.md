@@ -21,15 +21,19 @@ API completa para simular uma rede social. Construída com **Node.js**, **Expres
 
 ```
 ├── server.js              # Ponto de entrada da aplicação
+├── prisma.config.js       # Configuração do Prisma CLI
 ├── routes/
-│   └── routes.js          # Definição de todas as rotas
+│   └── routes.js          # Rotas com documentação @openapi
 ├── controllers/
 │   ├── userController.js  # Lógica de usuários (CRUD)
 │   └── postController.js  # Lógica de posts e feed
 ├── middlewares/
-│   └── validateMiddleware.js  # Validação de dados com Zod
+│   └── validateMiddleware.js  # Validação com Zod (userSchema, updateUserSchema, postSchema)
 ├── lib/
-│   └── prisma.js          # Instância global do Prisma Client
+│   ├── prisma.js          # Instância global do Prisma Client
+│   └── swagger.js         # Configuração do Swagger/OpenAPI
+├── tests/
+│   └── validateMiddleware.test.js  # Testes unitários do middleware
 └── prisma/
     ├── schema.prisma      # Modelagem do banco de dados
     └── seed.js            # Gerador de dados fictícios
@@ -92,10 +96,18 @@ API completa para simular uma rede social. Construída com **Node.js**, **Expres
     npx prisma db seed
     ```
 
-6. **Inicie o Servidor:**
+6. **Gere o client do Prisma:**
+
+    ```bash
+    npm run build
+    ```
+
+7. **Inicie o Servidor:**
     ```bash
     npm run dev
     ```
+
+A documentação interativa estará disponível em **http://localhost:3000/docs**.
 
 ---
 
@@ -108,16 +120,31 @@ API completa para simular uma rede social. Construída com **Node.js**, **Expres
 | **GET**    | `/users`           | Lista usuários (com paginação e busca).                   |
 | **GET**    | `/users/:username` | Retorna o perfil completo de um usuário.                  |
 | **POST**   | `/users`           | Cadastra um novo usuário.                                 |
-| **PUT**    | `/users/:id`       | Atualiza o perfil de um usuário.                          |
+| **PUT**    | `/users/:id`       | Atualiza `displayName`, `bio` e/ou `avatarUrl`.           |
 | **DELETE** | `/users/:id`       | Remove a conta e todos os dados vinculados.               |
 | **GET**    | `/posts`           | Feed global (todos os posts, ordenados por data).         |
 | **POST**   | `/posts`           | Cria um novo post.                                        |
 | **GET**    | `/feed/:userId`    | Feed personalizado (apenas de quem o usuário segue).      |
 | **POST**   | `/follow`          | Segue um usuário (cria vínculo social).                   |
+| **GET**    | `/docs`            | Documentação interativa (Swagger UI).                     |
 
 ---
 
 ## 📋 Exemplos de Uso
+
+### Atualizar Perfil (`PUT /users/:id`)
+
+Apenas os campos `displayName`, `bio` e `avatarUrl` são aceitos. Campos como `email`, `username` e `password` são ignorados pela validação.
+
+```json
+{
+  "displayName": "Leo Camelo",
+  "bio": "Desenvolvedor full stack.",
+  "avatarUrl": "https://example.com/avatar.jpg"
+}
+```
+
+---
 
 ### Criar um Usuário (`POST /users`)
 
@@ -165,6 +192,18 @@ API completa para simular uma rede social. Construída com **Node.js**, **Expres
 ### Listar Usuários com Busca (`GET /users?search=leo&page=1&limit=5`)
 
 Retorna usuários cujo `username` ou `displayName` contenha "leo".
+
+---
+
+## 🧪 Testes
+
+O projeto inclui testes unitários para o middleware de validação.
+
+```bash
+npm test
+```
+
+Os testes cobrem os três schemas (`userSchema`, `updateUserSchema`, `postSchema`), verificando tanto casos válidos quanto inválidos.
 
 ---
 
