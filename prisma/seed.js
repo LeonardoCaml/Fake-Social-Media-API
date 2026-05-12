@@ -1,15 +1,16 @@
 import "dotenv/config";
 import { PrismaClient } from "@prisma/client";
 import { faker } from "@faker-js/faker";
+import { bios } from "./seed-data/bios.js";
+import { posts } from "./seed-data/post.js";
 
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🧹 Limpando banco de dados...");
-
+  await prisma.follows.deleteMany();
+  await prisma.post.deleteMany();
   await prisma.user.deleteMany();
 
-  console.log("👥 Gerando 100 usuários...");
   const usersData = [];
 
   for (let i = 0; i < 100; i++) {
@@ -24,7 +25,7 @@ async function main() {
       email: faker.internet.email({ firstName, lastName }),
       password: faker.internet.password(),
       displayName: `${firstName} ${lastName}`,
-      bio: faker.lorem.sentence().substring(0, 160),
+      bio: faker.helpers.arrayElement(bios),
       avatarUrl: faker.image.avatar(),
       createdAt: faker.date.past(),
     });
@@ -35,16 +36,16 @@ async function main() {
   const allUsers = await prisma.user.findMany({ select: { id: true } });
   const allUserIds = allUsers.map((u) => u.id);
 
-  console.log("📝 Gerando posts...");
   const postsData = [];
   for (const userId of allUserIds) {
     const postCount = faker.number.int({ min: 1, max: 5 });
 
     for (let j = 0; j < postCount; j++) {
       postsData.push({
-        content: faker.lorem.paragraph().substring(0, 280),
+        content: faker.helpers.arrayElement(posts),
         imageUrl:
-          faker.helpers.maybe(() => faker.image.url(), { probability: 0.3 }) || null,
+          faker.helpers.maybe(() => faker.image.url(), { probability: 0.3 }) ||
+          null,
         authorId: userId,
         createdAt: faker.date.recent(),
       });
@@ -52,7 +53,6 @@ async function main() {
   }
   await prisma.post.createMany({ data: postsData });
 
-  console.log("🤝 Criando conexões de seguidores...");
   const followsData = [];
   for (const userId of allUserIds) {
     const amountToFollow = faker.number.int({ min: 3, max: 10 });
@@ -73,7 +73,7 @@ async function main() {
 
   await prisma.follows.createMany({ data: followsData });
 
-  console.log(`✅ Seed finalizado com sucesso!`);
+  console.log(`Seed finalizado com sucesso!`);
   console.log(`- 100 Usuários`);
   console.log(`- ${postsData.length} Posts`);
   console.log(`- ${followsData.length} Conexões`);
@@ -81,7 +81,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error("❌ Erro no seed:", e);
+    console.error("Erro no seed:", e);
     process.exit(1);
   })
   .finally(async () => {
